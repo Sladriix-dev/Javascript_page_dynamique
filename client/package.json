@@ -4,11 +4,12 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-      "dev": "http-server"
+        "dev": "http-server"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
-      "http-server": "^14.1.0"
+        "chart.js": "^4.0.1",
+        "http-server": "^14.1.0"
     }
-  }
+}

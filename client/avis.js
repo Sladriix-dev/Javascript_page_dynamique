@@ -54,4 +54,86 @@ formulaireAvis.addEventListener("submit", function (event) {
         headers: { "Content-Type": "application/json" },
         body: chargeUtile
     });
-})
+});
+
+// Calcul du nombre total de commentaires par quantité d'étoiles attribuées
+const avis = await fetch("http://localhost:8081/avis").then(avis => avis.json());
+const nb_commentaires = [0, 0, 0, 0, 0];
+
+for (let commentaire of avis) {
+    nb_commentaires[commentaire.nbEtoiles - 1]++;
+}
+
+// Légende qui s'affichera sur la gauche à côté de la barre horizontale
+const labels = ["5", "4", "3", "2", "1"];
+
+// Données et personnalisation du graphique
+const data = {
+    labels: labels,
+    datasets: [{
+        label: "Etoiles attribuées",
+        data: nb_commentaires.reverse(),
+        backgroundColor: "rgba(255, 230, 0, 1)", // jaune
+    }],
+};
+
+// Objet de la configuration final
+const config = {
+    type: "bar",
+    data: data,
+    options: {
+        indexAxis: 'y',
+    },
+};
+
+// Rendu du graphique dans l'élément canvas
+const graphiqueAvis = new Chart(
+    document.querySelector("#graphique-avis"),
+    config,
+);
+
+// Récupération des pièces depuis le localStorage
+const piecesJSON = window.localStorage.getItem("pieces");
+const pieces = JSON.parse(piecesJSON);
+
+// Calcul du nombre de commentaires
+let nbrCommentairesDispo = 0;
+let nbrCommentairesNonDispo = 0;
+
+for (let i = 0; i < avis.length; i++) {
+    const piece = Array.from(pieces).find(p => p.id === avis[i].pieceId);
+
+    if(piece) {
+        if(piece.disponibilité) {
+            nbrCommentairesDispo++
+        } else {
+            nbrCommentairesNonDispo++;
+        }
+    }
+}
+
+// Légende qui s'affichera sur la gauche à côté de la barre horizontale
+
+const labelsDispo = ["Disponibles", "Non dispo"];
+
+// Données et personnalisation du graphique
+const dataDispo = {
+    labels: labelsDispo,
+    datasets: [{
+        label: "Nombre de commentaires",
+        data: [nbrCommentairesDispo, nbrCommentairesNonDispo],
+        backgroundColor: "rgba(0, 230, 255, 1)",
+    }],
+};
+
+// Objet de config final
+const configDispo = {
+    type :"bar",
+    data: dataDispo,
+};
+
+// Rendu du graphique dans l'élément canvas
+new Chart(
+    document.querySelector("#graphique-dispo"),
+    configDispo,
+);
